@@ -1,0 +1,38 @@
+@model Cicekci.Models.Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <img src="@(Model.ImageUrl ?? "https://via.placeholder.com/600")" class="img-fluid rounded shadow" alt="@Model.Name" />
+    </div>
+    <div class="col-md-7">
+        <h2 class="fw-bold">@Model.Name</h2>
+        <span class="badge bg-success mb-3">@(Model.Category?.Name ?? "Kategorisiz")</span>
+        <p class="text-muted">@Model.Description</p>
+
+        <div class="my-3">
+            <h3 class="text-success fw-bold">@Model.Price TL</h3>
+            @if (Model.InStock)
+            {
+                <span class="badge bg-success">Stokta Var</span>
+            }
+            else
+            {
+                <span class="badge bg-warning">Stokta Yok</span>
+            }
+        </div>
+
+        <form action="/Products/AddToCart" method="post" class="d-flex gap-2 align-items-center">
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <label class="form-label me-2">Adet:</label>
+            <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px;" />
+            <button type="submit" class="btn btn-success px-4" @(Model.InStock ? "" : "disabled")>
+                <i class="bi bi-basket"></i> Sepete Ekle
+            </button>
+        </form>
+
+        <a href="/Products" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i> Ürünlere Dön</a>
+    </div>
+</div>

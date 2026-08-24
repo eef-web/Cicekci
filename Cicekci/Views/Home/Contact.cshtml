@@ -1,0 +1,62 @@
+@model Cicekci.Models.ContactMessage
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div class="row">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-4">İletişim 📬</h2>
+        <p class="text-muted mb-4">Sorularınız, özel siparişler ve geri bildirimleriniz için bize ulaşın.</p>
+
+        <form asp-action="Contact" method="post" novalidate>
+            <div class="mb-3">
+                <label class="form-label">Ad Soyad *</label>
+                <input asp-for="Name" class="form-control" placeholder="Adınız Soyadınız" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">E-posta *</label>
+                <input asp-for="Email" class="form-control" placeholder="ornek@email.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Telefon</label>
+                <input asp-for="Phone" class="form-control" placeholder="05XX XXX XX XX" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mesajınız *</label>
+                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesajınızı buraya yazın..."></textarea>
+                <span asp-validation-for="Message" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-success px-4">
+                <i class="bi bi-send"></i> Gönder
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card bg-light-subtle">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">İletişim Bilgileri</h5>
+                <p class="mb-2"><i class="bi bi-geo-alt-fill text-success"></i> <strong>Adres:</strong> İstanbul, Türkiye</p>
+                <p class="mb-2"><i class="bi bi-telephone text-success"></i> <strong>Telefon:</strong> +90 212 000 00 00</p>
+                <p class="mb-2"><i class="bi bi-envelope text-success"></i> <strong>E-posta:</strong> info@cicekci.com</p>
+                <hr />
+                <p class="mb-2"><i class="bi bi-clock text-success"></i> <strong>Çalışma Saatleri:</strong></p>
+                <p class="small text-muted">Pazartesi - Cumartesi: 09:00 - 21:00<br />Pazar: 10:00 - 18:00</p>
+                <hr />
+                <div class="d-flex gap-3 fs-4">
+                    <i class="bi bi-instagram text-success"></i>
+                    <i class="bi bi-facebook text-success"></i>
+                    <i class="bi bi-twitter-x text-success"></i>
+                    <i class="bi bi-whatsapp text-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
+}

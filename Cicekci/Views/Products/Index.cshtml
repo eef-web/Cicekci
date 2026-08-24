@@ -1,0 +1,71 @@
+@model List<Cicekci.Models.Product>
+@{
+    ViewData["Title"] = "Ürünler";
+    var categories = (List<Cicekci.Models.Category>)ViewBag.Categories ?? new List<Cicekci.Models.Category>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Ürünler 🌹</h2>
+    <form method="get" action="/Products" class="d-flex gap-2">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Çiçek ara..." style="width: 250px;" />
+        <button type="submit" class="btn btn-outline-success"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<!-- Kategori filtreleme -->
+<div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        <a href="/Products" class="btn btn-sm @(ViewBag.SelectedCategory == null ? "btn-success" : "btn-outline-success")">Tümü</a>
+        @foreach (var cat in categories)
+        {
+            <a href="/Products?categoryId=@cat.Id" class="btn btn-sm @(ViewBag.SelectedCategory == cat.Name ? "btn-success" : "btn-outline-success")">
+                @cat.Name
+            </a>
+        }
+    </div>
+</div>
+
+@if (ViewBag.SelectedCategory != null)
+{
+    <p class="text-muted mb-3"><strong>@ViewBag.SelectedCategory</strong> kategorisindeki ürünler</p>
+}
+
+<div class="row g-4">
+    @foreach (var p in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card product-card h-100">
+                <img src="@(p.ImageUrl ?? "https://via.placeholder.com/600")" class="card-img-top product-img" alt="@p.Name" />
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">@p.Name</h6>
+                    <p class="card-text text-muted small flex-grow-1">@(p.Description.Length > 50 ? p.Description.Substring(0, 50) + "..." : p.Description)</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="price-tag">@p.Price TL</span>
+                    </div>
+                    <div class="d-flex gap-1 mt-2">
+                        <a href="/Products/Details/@p.Id" class="btn btn-sm btn-outline-success flex-fill">Detay</a>
+                        <form action="/Products/AddToCart" method="post" class="flex-fill">
+                            <input type="hidden" name="productId" value="@p.Id" />
+                            <button type="submit" class="btn btn-sm btn-success w-100" @(p.InStock ? "" : "disabled")>
+                                <i class="bi bi-basket"></i>
+                            </button>
+                        </form>
+                    </div>
+                    @if (!p.InStock)
+                    {
+                        <span class="badge bg-warning mt-2">Stokta Yok</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="text-center py-5">
+        <i class="bi bi-flower1 text-muted" style="font-size: 3rem;"></i>
+        <p class="mt-3 text-muted">Bu kriterlere uygun ürün bulunamadı.</p>
+        <a href="/Products" class="btn btn-outline-success">Tüm Ürünleri Gör</a>
+    </div>
+}
