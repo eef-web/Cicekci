@@ -1,0 +1,47 @@
+@model Cicekci.Models.Order
+@{
+    ViewData["Title"] = "Sipariş Sil";
+}
+
+<h2 class="mb-4"><i class="bi bi-exclamation-triangle text-danger"></i> Siparişi Sil</h2>
+
+<div class="card stat-card">
+    <div class="card-body p-4">
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> Bu siparişi silmek üzeresiniz. Bu işlem geri alınamaz.
+        </div>
+
+        <table class="table">
+            <tr>
+                <th style="width: 150px;">Sipariş No:</th>
+                <td>#@Model.Id</td>
+            </tr>
+            <tr>
+                <th>Müşteri:</th>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <th>Telefon:</th>
+                <td>@Model.Phone</td>
+            </tr>
+            <tr>
+                <th>Tutar:</th>
+                <td class="fw-bold text-success">@Model.TotalAmount.ToString("N0") TL</td>
+            </tr>
+            <tr>
+                <th>Tarih:</th>
+                <td>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+            <tr>
+                <th>Durum:</th>
+                <td>@Model.Status</td>
+            </tr>
+        </table>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> İptal</a>
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Evet, Sil</button>
+        </form>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 using Cicekci.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cicekci.Areas.Admin.Controllers
 {
@@ -15,7 +16,6 @@ namespace Cicekci.Areas.Admin.Controllers
             _db = db;
         }
 
-        // Dinamik dashboard: veriler veri tabanından toplanır ve sayfada gösterilir
         public IActionResult Index()
         {
             ViewBag.ProductCount = _db.Products.Count();
@@ -24,6 +24,13 @@ namespace Cicekci.Areas.Admin.Controllers
             ViewBag.UnreadMessageCount = _db.ContactMessages.Count(m => !m.IsRead);
             ViewBag.OutOfStockCount = _db.Products.Count(p => !p.InStock);
 
+            // Sipariş istatistikleri
+            ViewBag.OrderCount = _db.Orders.Count();
+            ViewBag.PendingOrderCount = _db.Orders.Count(o => o.Status == "Hazırlanıyor");
+            ViewBag.Revenue = _db.Orders
+                .Where(o => o.Status != "İptal")
+                .Sum(o => (decimal?)o.TotalAmount) ?? 0m;
+
             ViewBag.RecentMessages = _db.ContactMessages
                 .OrderByDescending(m => m.SentDate)
                 .Take(5)
@@ -31,6 +38,11 @@ namespace Cicekci.Areas.Admin.Controllers
 
             ViewBag.RecentProducts = _db.Products
                 .OrderByDescending(p => p.CreatedDate)
+                .Take(5)
+                .ToList();
+
+            ViewBag.RecentOrders = _db.Orders
+                .OrderByDescending(o => o.OrderDate)
                 .Take(5)
                 .ToList();
 

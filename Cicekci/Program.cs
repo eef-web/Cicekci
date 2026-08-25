@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// SQLite veri tabanı bağlantısı (gerçek hayat projelerinde appsettings.json'daki
-// ConnectionStrings bölümünden okunur — bkz. appsettings.json)
+// SQLite veri tabanı bağlantısı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=cicekci.db";
 
@@ -44,10 +43,12 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Veri tabanı otomatik oluştur ve örnek veri ekle
+// Veri tabanı: eski şemayı sil, yeniden oluştur ve örnek veri ekle
+// (Geliştirme ortamı için — schema değiştiğinde tablolar güncellenir)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
     DbSeeder.Seed(db);
 }
