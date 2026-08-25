@@ -27,9 +27,13 @@ namespace Cicekci.Areas.Admin.Controllers
             // Sipariş istatistikleri
             ViewBag.OrderCount = _db.Orders.Count();
             ViewBag.PendingOrderCount = _db.Orders.Count(o => o.Status == "Hazırlanıyor");
+
+            // SQLite decimal Sum desteklemez — önce veriyi çek, sonra client-side topla
             ViewBag.Revenue = _db.Orders
                 .Where(o => o.Status != "İptal")
-                .Sum(o => (decimal?)o.TotalAmount) ?? 0m;
+                .Select(o => o.TotalAmount)
+                .AsEnumerable()
+                .Sum();
 
             ViewBag.RecentMessages = _db.ContactMessages
                 .OrderByDescending(m => m.SentDate)
