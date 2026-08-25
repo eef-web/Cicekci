@@ -1,0 +1,120 @@
+@model Cicekci.Models.Order
+@{
+    ViewData["Title"] = "Sipariş Onayı";
+}
+
+<section class="py-5" style="background: #f8f9fa; min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Adım göstergesi -->
+                <div class="d-flex align-items-center justify-content-center mb-5">
+                    <div class="d-flex align-items-center">
+                        <span class="badge rounded-circle bg-light text-muted border" style="width: 32px; height: 32px;">
+                            <i class="bi bi-check"></i>
+                        </span>
+                        <span class="ms-2 text-muted">Sepet</span>
+                    </div>
+                    <div class="flex-grow-1 mx-2" style="height: 2px; background: #dee2e6; max-width: 80px;"></div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge rounded-circle bg-light text-muted border" style="width: 32px; height: 32px;">
+                            <i class="bi bi-check"></i>
+                        </span>
+                        <span class="ms-2 text-muted">Teslimat</span>
+                    </div>
+                    <div class="flex-grow-1 mx-2" style="height: 2px; background: #dee2e6; max-width: 80px;"></div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge rounded-circle bg-success text-white" style="width: 32px; height: 32px;">3</span>
+                        <span class="ms-2 fw-semibold text-success">Onay</span>
+                    </div>
+                </div>
+
+                <!-- Başarı mesajı -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                         style="width: 80px; height: 80px; background: #e8f5e9;">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h2 style="color: #2d3a27;">Siparişiniz Alındı!</h2>
+                    <p class="text-muted">Siparişiniz başarıyla oluşturuldu. En kısa sürede teslim edilecektir.</p>
+                    <p class="text-muted">
+                        <span class="fw-semibold">Sipariş No:</span> #@Model.Id &nbsp;|&nbsp;
+                        <span class="fw-semibold">Tarih:</span> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")
+                    </p>
+                </div>
+
+                <!-- Sipariş detayları -->
+                <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3" style="color: #2d3a27;">Sipariş Detayları</h5>
+
+                        <!-- Teslimat bilgileri -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p class="mb-1 text-muted small"><i class="bi bi-person"></i> Ad Soyad</p>
+                                <p class="fw-semibold">@Model.FullName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1 text-muted small"><i class="bi bi-telephone"></i> Telefon</p>
+                                <p class="fw-semibold">@Model.Phone</p>
+                            </div>
+                            <div class="col-md-12">
+                                <p class="mb-1 text-muted small"><i class="bi bi-geo-alt"></i> Teslimat Adresi</p>
+                                <p class="fw-semibold">@Model.Address</p>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Note))
+                            {
+                                <div class="col-md-12">
+                                    <p class="mb-1 text-muted small"><i class="bi bi-sticky"></i> Sipariş Notu</p>
+                                    <p>@Model.Note</p>
+                                </div>
+                            }
+                        </div>
+
+                        <hr />
+
+                        <!-- Ürünler -->
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th class="text-center">Adet</th>
+                                    <th class="text-end">Fiyat</th>
+                                    <th class="text-end">Tutar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">@item.Price.ToString("N0") TL</td>
+                                        <td class="text-end fw-semibold">@((item.Price * item.Quantity).ToString("N0")) TL</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Toplam:</td>
+                                    <td class="text-end fw-bold fs-5 text-success">@Model.TotalAmount.ToString("N0") TL</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Durum -->
+                        <div class="d-flex align-items-center mt-3 p-3 rounded" style="background: #fff8e1;">
+                            <i class="bi bi-clock-fill text-warning me-2"></i>
+                            <span>Sipariş Durumu: <strong>@Model.Status</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/Products" class="btn btn-outline-success me-2"><i class="bi bi-bag"></i> Alışverişe Devam Et</a>
+                    <a href="/" class="btn btn-success" style="background: #2d3a27;">Anasayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

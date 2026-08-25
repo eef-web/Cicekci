@@ -70,6 +70,73 @@ namespace Cicekci.Models
         public string? ImageUrl { get; set; }
     }
 
+    // Sipariş (veri tabanına kaydedilir)
+    public class Order
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Ad Soyad zorunludur.")]
+        [StringLength(100, MinimumLength = 2)]
+        [Display(Name = "Ad Soyad")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-posta zorunludur.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta giriniz.")]
+        [StringLength(100)]
+        [Display(Name = "E-posta")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Telefon zorunludur.")]
+        [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
+        [StringLength(20)]
+        [Display(Name = "Telefon")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Teslimat adresi zorunludur.")]
+        [StringLength(500, MinimumLength = 10, ErrorMessage = "Adres en az 10 karakter olmalıdır.")]
+        [Display(Name = "Teslimat Adresi")]
+        public string Address { get; set; } = string.Empty;
+
+        [Display(Name = "Sipariş Notu")]
+        [StringLength(500)]
+        public string? Note { get; set; }
+
+        [Column(TypeName = "decimal(10,2)")]
+        [Display(Name = "Toplam Tutar")]
+        public decimal TotalAmount { get; set; }
+
+        [Display(Name = "Sipariş Tarihi")]
+        public DateTime OrderDate { get; set; } = DateTime.Now;
+
+        // "Hazırlanıyor", "Gönderildi", "Teslim Edildi", "İptal"
+        [StringLength(20)]
+        [Display(Name = "Durum")]
+        public string Status { get; set; } = "Hazırlanıyor";
+
+        // İlişki: siparişteki ürünler
+        public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+    }
+
+    // Sipariş içindeki tek bir ürün kalemi
+    public class OrderItem
+    {
+        public int Id { get; set; }
+
+        public int OrderId { get; set; }
+        [ForeignKey(nameof(OrderId))]
+        public virtual Order? Order { get; set; }
+
+        public int ProductId { get; set; }
+
+        [StringLength(100)]
+        public string ProductName { get; set; } = string.Empty;
+
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Price { get; set; }
+
+        public int Quantity { get; set; }
+    }
+
     // İletişim sayfasından gelen mesajlar (veri tabanına kaydedilir)
     public class ContactMessage
     {

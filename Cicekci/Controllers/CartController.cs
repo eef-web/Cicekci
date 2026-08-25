@@ -1,6 +1,8 @@
 using Cicekci.Data;
+using Cicekci.Models;
 using Cicekci.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cicekci.Controllers
 {
@@ -20,6 +22,7 @@ namespace Cicekci.Controllers
         {
             var items = _cartService.GetCartItems();
             ViewBag.Total = _cartService.GetTotal();
+            ViewBag.ItemCount = items.Sum(i => i.Quantity);
             return View(items);
         }
 
@@ -61,6 +64,77 @@ namespace Cicekci.Controllers
         {
             _cartService.Clear();
             return RedirectToAction("Index");
+        }
+
+        // --- SİPARİŞ ONAYLA (Checkout) ---
+
+        // Checkout formu
+        [HttpGet]
+        public IActionResult Checkout()
+        {
+            var items = _cartService.GetCartItems();
+            if (!items.Any())
+            {
+                TempData["Error"] = "Sepetiniz boş. Önce ürün ekleyin.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Total = _cartService.GetTotal();
+            return View(new Order());
+        }
+
+        // Checkout formu POST — siparişi veri tabanına kaydet
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Checkout(Order model)
+        {
+            var items = _cartService.GetCartItems();
+            if (!items.Any())
+            {
+                TempData["Error"] = "Sepetiniz boş.";
+                return RedirectToAction("Index");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Total = _cartService.GetTotal();
+                return View(model);
+            }
+
+            // Siparişi oluştur
+            model.TotalAmount = _cartService.GetTotal();
+            model.OrderDate = DateTime.Now;
+            model.Status = "Hazırlanıyor";
+
+            // Sipariş kalemleri
+            model.Items = items.Select(i => new OrderItem
+            {
+                ProductId = i.ProductId,
+                ProductName = i.ProductName,
+                Price = i.Price,
+                Quantity = i.Quantity
+            }).ToList();
+
+            _db.Orders.Add(model);
+            _db.SaveChanges();
+
+            // Sepeti temizle
+            _cartService.Clear();
+
+            // Onay sayfasına yönlendir
+            return RedirectToAction("OrderConfirmation", new { id = model.Id });
+        }
+
+        // Sipariş onay sayfası
+        [HttpGet]
+        public IActionResult OrderConfirmation(int id)
+        {
+            var order = _db.Orders
+                .Include(o => o.Items)
+                .FirstOrDefault(o => o.Id == id);
+
+            if (order == null) return NotFound();
+            return View(order);
         }
     }
 }

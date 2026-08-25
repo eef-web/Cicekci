@@ -17,6 +17,8 @@ namespace Cicekci.Data
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<SiteContent> SiteContents { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +27,13 @@ namespace Cicekci.Data
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Sipariş → Sipariş kalemi bire-çok ilişkisi
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AdminUser>()
@@ -76,7 +85,7 @@ namespace Cicekci.Data
             var categories = new List<Category>
             {
                 new Category { Name = "Doğum Günü", Description = "Doğum günü için özel çiçek aranjmanları" },
-                new Category { Name = "Sevgililer Günü", Description = "Aşkın sembolü kırmızı güller ve daha fazlası" },
+                new Category { Name = "Sevgililer Günü", Description = "Aşkın sembolü kırmızı gülller ve daha fazlası" },
                 new Category { Name = "Cenaze", Description = "Başsağlığı için uygun çiçekler" },
                 new Category { Name = "Ev & Ofis", Description = "Mekanlara renk katan çiçekler" },
             };
