@@ -43,13 +43,33 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Veri tabanı: eski şemayı sil, yeniden oluştur ve örnek veri ekle
-// (Geliştirme ortamı için — schema değiştiğinde tablolar güncellenir)
+// Veri tabanı başlatma
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureDeleted();
+
+    // Önce DB yoksa oluştur
     db.Database.EnsureCreated();
+
+    // Eski şemadan gelen DB'lerde Orders tablosu olmayabilir
+    // Kontrol et, yoksa DB'yi sil ve yeniden oluştur
+    bool needsRecreate = false;
+    try
+    {
+        db.Database.ExecuteSqlRaw("SELECT 1 FROM Orders LIMIT 1");
+    }
+    catch
+    {
+        needsRecreate = true;
+    }
+
+    if (needsRecreate)
+    {
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+    }
+
+    // Örnek veri ekle
     DbSeeder.Seed(db);
 }
 
