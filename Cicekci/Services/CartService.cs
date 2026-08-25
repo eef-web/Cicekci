@@ -1,96 +1,88 @@
 using Cicekci.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
 namespace Cicekci.Services
 {
-    // Session tabanlı sepet yönetimi
+    // Session tabanlı sepet servisi — verileri session'da JSON olarak saklar
     public class CartService
     {
-        private readonly IHttpContextAccessor _httpContext;
-        private const string CartKey = "Cart";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private const string SessionKey = "Cart";
 
-        public CartService(IHttpContextAccessor httpContext)
+        public CartService(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContext = httpContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public List<CartItem> GetCart()
-        {
-            var session = _httpContext.HttpContext?.Session;
-            if (session == null) return new List<CartItem>();
+        private ISession Session => _httpContextAccessor.HttpContext!.Session;
 
-            var json = session.GetString(CartKey);
-            return string.IsNullOrEmpty(json)
-                ? new List<CartItem>()
-                : JsonSerializer.Deserialize<List<CartItem>>(json) ?? new List<CartItem>();
+        private List<CartItem> GetCart()
+        {
+            var json = Session.GetString(SessionKey);
+            if (string.IsNullOrEmpty(json)) return new List<CartItem>();
+            return JsonSerializer.Deserialize<List<CartItem>>(json) ?? new List<CartItem>();
         }
 
-        public void SaveCart(List<CartItem> cart)
+        private void SaveCart(List<CartItem> cart)
         {
-            var session = _httpContext.HttpContext?.Session;
-            if (session == null) return;
-            session.SetString(CartKey, JsonSerializer.Serialize(cart));
+            var json = JsonSerializer.Serialize(cart);
+            Session.SetString(SessionKey, json);
         }
 
-        public void AddToCart(CartItem item)
+        public List<CartItem> GetCartItems()
+        {
+            return GetCart();
+        }
+
+        public void AddItem(int productId, string productName, decimal price, int quantity, string? imageUrl)
         {
             var cart = GetCart();
-            var existing = cart.FirstOrDefault(c => c.ProductId == item.ProductId);
+            var existing = cart.FirstOrDefault(i => i.ProductId == productId);
             if (existing != null)
             {
-                existing.Quantity += item.Quantity;
+                existing.Quantity += quantity;
             }
             else
             {
-                cart.Add(item);
+                cart.Add(new CartItem
+                {
+                    ProductId = productId,
+                    ProductName = productName,
+                    Price = price,
+                    Quantity = quantity,
+                    ImageUrl = imageUrl
+                });
             }
             SaveCart(cart);
         }
 
-        public void RemoveFromCart(int productId)
+        public void RemoveItem(int productId)
         {
             var cart = GetCart();
-            var item = cart.FirstOrDefault(c => c.ProductId == productId);
-            if (item != null)
-            {
-                cart.Remove(item);
-                SaveCart(cart);
-            }
+            cart.RemoveAll(i => i.ProductId == productId);
+            SaveCart(cart);
         }
 
         public void UpdateQuantity(int productId, int quantity)
         {
             var cart = GetCart();
-            var item = cart.FirstOrDefault(c => c.ProductId == productId);
+            var item = cart.FirstOrDefault(i => i.ProductId == productId);
             if (item != null)
             {
-                if (quantity <= 0)
-                {
-                    cart.Remove(item);
-                }
-                else
-                {
-                    item.Quantity = quantity;
-                }
-                SaveCart(cart);
+                item.Quantity = quantity;
             }
+            SaveCart(cart);
         }
 
-        public void ClearCart()
+        public void Clear()
         {
-            var session = _httpContext.HttpContext?.Session;
-            session?.Remove(CartKey);
+            Session.Remove(SessionKey);
         }
 
         public decimal GetTotal()
         {
-            return GetCart().Sum(c => c.Price * c.Quantity);
-        }
-
-        public int GetCount()
-        {
-            return GetCart().Sum(c => c.Quantity);
+            return GetCart().Sum(i => i.Price * i.Quantity);
         }
     }
 }

@@ -1,78 +1,38 @@
+@model Cicekci.Models.SiteContent
 @{
     ViewData["Title"] = "Hakkımızda";
 }
 
-<div class="row align-items-center mb-5">
-    <div class="col-md-6">
-        <h2 class="fw-bold mb-3">Hakkımızda 🌸</h2>
-        <p class="lead">Çiçekçi olarak 2010 yılından beri sevdiklerinize en taze çiçekleri ulaştırıyoruz.</p>
-        <p>
-            İstanbul merkezli işletmemiz, her buketi özenle hazırlar ve aynı gün teslimat hizmeti sunar.
-            Amacımız, çiçeklerin taşıdığı duyguları en doğru şekilde ifade etmek ve her özel günü unutulmaz kılmak.
-        </p>
-        <p>
-            Yerel çiftçilerden aldığımız taze çiçeklerle, sürdürülebilir bir yaklaşımı benimsiyor ve doğaya saygılı
-            paketleme kullanıyoruz. 500+ farklı çiçek aranjmanı ve saksı seçeneğiyle her zevke hitap ediyoruz.
-        </p>
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1520763185298-1b58670fba46?w=800" class="img-fluid rounded shadow" style="border-radius: 16px;" />
+            </div>
+            <div class="col-md-6 mt-4 mt-md-0">
+                <h2 style="color: #2d3a27;">@Model.AboutTitle</h2>
+                <p class="lead mt-3">@Model.AboutMainText</p>
+                <p class="text-muted">@Model.AboutDetailText</p>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6 text-center">
-        <img src="https://images.unsplash.com/photo-1487070183336-b86392237a3e?w=800" class="img-fluid rounded shadow" alt="Çiçekçi Dükkanı" />
-    </div>
-</div>
+</section>
 
-<div class="row text-center g-4 mb-5">
-    <div class="col-md-3">
-        <div class="stat-card p-4 rounded">
-            <h2 class="text-success fw-bold">15+</h2>
-            <p class="text-muted">Yıllık Tecrübe</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card p-4 rounded">
-            <h2 class="text-success fw-bold">50.000+</h2>
-            <p class="text-muted">Mutlu Müşteri</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card p-4 rounded">
-            <h2 class="text-success fw-bold">500+</h2>
-            <p class="text-muted">Çiçek Çeşidi</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card p-4 rounded">
-            <h2 class="text-success fw-bold">Aynı Gün</h2>
-            <p class="text-muted">Teslimat</p>
-        </div>
-    </div>
-</div>
-
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-truck fs-1 text-success"></i>
-                <h5 class="mt-3">Hızlı Teslimat</h5>
-                <p class="text-muted small">Siparişinizi aynı gün içinde İstanbul içinde teslim ediyoruz.</p>
+<section class="py-5 text-white text-center" style="background: #2d3a27;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2 class="fw-bold">@Model.StatYears</h2>
+                <p>Yıllık Tecrübe</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold">@Model.StatCustomers</h2>
+                <p>Mutlu Müşteri</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold">@Model.StatProducts</h2>
+                <p>Çiçek Çeşidi</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-flower1 fs-1 text-success"></i>
-                <h5 class="mt-3">Taze Çiçekler</h5>
-                <p class="text-muted small">Her gün taze gelen çiçeklerle özenle hazırlanan buketler.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-heart-fill fs-1 text-success"></i>
-                <h5 class="mt-3">Müşteri Memnuniyeti</h5>
-                <p class="text-muted small">%100 memnuniyet garantisi ile gönül rahatlığıyla sipariş verin.</p>
-            </div>
-        </div>
-    </div>
-</div>
+</section>

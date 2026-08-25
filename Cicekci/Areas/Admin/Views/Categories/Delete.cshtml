@@ -1,0 +1,25 @@
+@model Cicekci.Models.Category
+@{
+    ViewData["Title"] = "Kategori Sil";
+}
+
+<h2 class="mb-4 text-danger"><i class="bi bi-trash"></i> Kategoriyi Sil</h2>
+
+<div class="card stat-card">
+    <div class="card-body p-4">
+        <div class="alert alert-warning">
+            <strong>@Model.Name</strong> kategorisini silmek istediğinize emin misiniz?
+        </div>
+        @if (Model.Products.Any())
+        {
+            <div class="alert alert-danger">
+                Bu kategoriye ait <strong>@Model.Products.Count</strong> ürün var. Silmeden önce ürünleri taşıyın.
+            </div>
+        }
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Evet, Sil</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+        </form>
+    </div>
+</div>

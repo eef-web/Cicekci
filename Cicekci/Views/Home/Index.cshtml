@@ -1,58 +1,102 @@
-@model List<Cicekci.Models.Product>
 @{
-    ViewData["Title"] = "Ana Sayfa";
-    var categories = (List<Cicekci.Models.Category>)ViewBag.Categories ?? new List<Cicekci.Models.Category>();
+    ViewData["Title"] = "Anasayfa";
+    var content = ViewBag.Content as Cicekci.Models.SiteContent ?? new Cicekci.Models.SiteContent();
+    var products = ViewBag.Products as List<Cicekci.Models.Product> ?? new List<Cicekci.Models.Product>();
 }
 
-<!-- Hero Banner -->
-<div class="hero-section text-center mb-5">
-    <div class="hero-overlay">
-        <h1 class="display-4 fw-bold text-white">Sevdiklerinize Çiçek Gönderin 🌸</h1>
-        <p class="lead text-white-50">Taze çiçekler, hızlı teslimat, mutlu yüzler.</p>
+<!-- Hero Section -->
+<section class="hero-section text-white text-center" style="background: linear-gradient(rgba(45,58,39,0.7), rgba(45,58,39,0.8)), url('https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1600'); background-size: cover; background-position: center; padding: 120px 0;">
+    <div class="container">
+        <h1 class="display-4 fw-bold">@content.HomeHeroTitle</h1>
+        <p class="lead mt-3">@content.HomeHeroSubtitle</p>
         <a href="/Products" class="btn btn-light btn-lg mt-3">Ürünleri Gör</a>
     </div>
-</div>
-
-<!-- Kategoriler -->
-<div class="mb-5">
-    <h3 class="mb-3">Kategoriler</h3>
-    <div class="row g-3">
-        @foreach (var cat in categories)
-        {
-            <div class="col-md-3 col-sm-6">
-                <a href="/Products?categoryId=@cat.Id" class="text-decoration-none">
-                    <div class="card category-card h-100">
-                        <div class="card-body text-center">
-                            <i class="bi bi-flower2 fs-1 text-success"></i>
-                            <h5 class="mt-2">@cat.Name</h5>
-                            <p class="small text-muted">@cat.Description</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        }
-    </div>
-</div>
+</section>
 
 <!-- Öne Çıkan Ürünler -->
-<div>
-    <h3 class="mb-3">Öne Çıkan Ürünler</h3>
-    <div class="row g-4">
-        @foreach (var p in Model)
-        {
-            <div class="col-lg-3 col-md-6">
-                <div class="card product-card h-100">
-                    <img src="@(p.ImageUrl ?? "https://via.placeholder.com/600")" class="card-img-top product-img" alt="@p.Name" />
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@p.Name</h5>
-                        <p class="card-text text-muted small flex-grow-1">@(p.Description.Length > 60 ? p.Description.Substring(0, 60) + "..." : p.Description)</p>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <span class="price-tag">@p.Price TL</span>
-                            <a href="/Products/Details/@p.Id" class="btn btn-sm btn-outline-success">Detay</a>
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #2d3a27;">Öne Çıkan Çiçekler</h2>
+        <div class="row g-4">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" class="card-img-top" style="height: 220px; object-fit: cover;" />
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-muted small">@(product.Description.Length > 80 ? product.Description.Substring(0, 80) + "..." : product.Description)</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold" style="color: #2d3a27;">@product.Price.ToString("N0") TL</span>
+                                <a href="/Cart/Add?productId=@product.Id" class="btn btn-sm text-white" style="background: #2d3a27;">Sepete Ekle</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a href="/Products" class="btn btn-outline-success btn-lg">Tüm Ürünleri Gör</a>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- İstatistikler -->
+<section class="py-5 text-white text-center" style="background: #2d3a27;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2 class="fw-bold">@content.StatYears</h2>
+                <p>Yıllık Tecrübe</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold">@content.StatCustomers</h2>
+                <p>Mutlu Müşteri</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold">@content.StatProducts</h2>
+                <p>Çiçek Çeşidi</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Neden Biz? -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #2d3a27;">Neden Biz?</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-4">
+                    <i class="bi bi-truck" style="font-size: 3rem; color: #2d3a27;"></i>
+                    <h4 class="mt-3">Hızlı Teslimat</h4>
+                    <p class="text-muted">Aynı gün teslimat seçeneği</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4">
+                    <i class="bi bi-flower1" style="font-size: 3rem; color: #2d3a27;"></i>
+                    <h4 class="mt-3">Taze Çiçekler</h4>
+                    <p class="text-muted">Her gün taze günderim</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4">
+                    <i class="bi bi-credit-card" style="font-size: 3rem; color: #2d3a27;"></i>
+                    <h4 class="mt-3">Güvenli Ödeme</h4>
+                    <p class="text-muted">Kredi kartı / Kapıda ödeme</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4">
+                    <i class="bi bi-headset" style="font-size: 3rem; color: #2d3a27;"></i>
+                    <h4 class="mt-3">7/24 Destek</h4>
+                    <p class="text-muted">Her zaman yanınızdayız</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

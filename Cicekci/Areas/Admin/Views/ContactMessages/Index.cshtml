@@ -1,0 +1,48 @@
+@model IEnumerable<Cicekci.Models.ContactMessage>
+@{
+    ViewData["Title"] = "Mesajlar";
+}
+
+<h2 class="mb-4"><i class="bi bi-envelope"></i> İletişim Mesajları</h2>
+
+<div class="card stat-card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td class="text-muted">@item.Email</td>
+                        <td>@item.SentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            @if (item.IsRead)
+                            {
+                                <span class="badge bg-success">Okundu</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Yeni</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Yönetici Girişi";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background: linear-gradient(135deg, #2d3a27, #4a5d3a);">
+    <div class="card shadow-lg border-0" style="width: 400px; border-radius: 16px;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h2 style="color: #2d3a27;"><i class="bi bi-flower1"></i> Çiçekçi</h2>
+                <p class="text-muted">Yönetim Paneli Girişi</p>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(false)
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control form-control-lg" placeholder="Kullanıcı adı" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Şifre" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-lg w-100 text-white" style="background: #2d3a27; border-radius: 10px;">
+                    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">Varsayılan: <strong>admin</strong> / <strong>admin123</strong></small>
+            </div>
+        </div>
+    </div>
+</div>

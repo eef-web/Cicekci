@@ -1,0 +1,40 @@
+@model IEnumerable<Cicekci.Models.Category>
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-tags"></i> Kategoriler</h2>
+    <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-lg"></i> Yeni Kategori</a>
+</div>
+
+<div class="card stat-card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kategori Adı</th>
+                    <th>Açıklama</th>
+                    <th>Ürün Sayısı</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td class="text-muted">@(item.Description ?? "-")</td>
+                        <td><span class="badge bg-info">@item.Products.Count</span></td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

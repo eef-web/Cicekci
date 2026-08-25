@@ -1,5 +1,7 @@
 using Cicekci.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Cicekci.Data
 {
@@ -13,6 +15,8 @@ namespace Cicekci.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<SiteContent> SiteContents { get; set; }
+        public DbSet<AdminUser> AdminUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +26,36 @@ namespace Cicekci.Data
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AdminUser>()
+                .HasIndex(a => a.Username)
+                .IsUnique();
+        }
+    }
+
+    // Şifre hashleme yardımcı sınıfı (PBKDF2 tabanlı, tuzlu hash)
+    public static class PasswordHasher
+    {
+        public static (string hash, string salt) HashPassword(string password)
+        {
+            var saltBytes = RandomNumberGenerator.GetBytes(16);
+            var salt = Convert.ToBase64String(saltBytes);
+            var hash = ComputeHash(password, saltBytes);
+            return (hash, salt);
+        }
+
+        public static bool Verify(string password, string hash, string salt)
+        {
+            var saltBytes = Convert.FromBase64String(salt);
+            var computed = ComputeHash(password, saltBytes);
+            return computed == hash;
+        }
+
+        private static string ComputeHash(string password, byte[] saltBytes)
+        {
+            using var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 100_000, HashAlgorithmName.SHA256);
+            var hashBytes = pbkdf2.GetBytes(32);
+            return Convert.ToBase64String(hashBytes);
         }
     }
 
@@ -30,6 +64,13 @@ namespace Cicekci.Data
     {
         public static void Seed(ApplicationDbContext db)
         {
+            SeedCategoriesAndProducts(db);
+            SeedSiteContent(db);
+            SeedAdminUser(db);
+        }
+
+        private static void SeedCategoriesAndProducts(ApplicationDbContext db)
+        {
             if (db.Categories.Any()) return;
 
             var categories = new List<Category>
@@ -37,7 +78,7 @@ namespace Cicekci.Data
                 new Category { Name = "Doğum Günü", Description = "Doğum günü için özel çiçek aranjmanları" },
                 new Category { Name = "Sevgililer Günü", Description = "Aşkın sembolü kırmızı güller ve daha fazlası" },
                 new Category { Name = "Cenaze", Description = "Başsağlığı için uygun çiçekler" },
-                new Category { Name = "Ev & Ofis", Description = "Mekanlara renk katak çiçekler" },
+                new Category { Name = "Ev & Ofis", Description = "Mekanlara renk katan çiçekler" },
             };
 
             db.Categories.AddRange(categories);
@@ -53,13 +94,35 @@ namespace Cicekci.Data
                 new Product { Name = "Lavanta Buketi", Description = "Mor lavantalarla hoş kokulu buket.", Price = 380, ImageUrl = "https://images.unsplash.com/photo-1490750967868-88aa4481c6a8?w=600", CategoryId = 4, InStock = true },
                 new Product { Name = "Yonca Çelenk", Description = "Cenaze törenleri için beyaz yonca çelenk.", Price = 600, ImageUrl = "https://images.unsplash.com/photo-1606041008023-472dfb5e3344?w=600", CategoryId = 3, InStock = true },
                 new Product { Name = "Peyzaj Saksı", Description = "Ofis ve ev için bakımı kolay yeşil bitki.", Price = 250, ImageUrl = "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600", CategoryId = 4, InStock = true },
-                new Product { Name = "Gül & Lale Karışımı", Description = "Kırmızı gül ve beyaz lale karışımı özel buket.", Price = 480, ImageUrl = "https://images.unsplash.com/photo-1520763185298-1b58670fba46?w=600", CategoryId = 2, InStock = true },
+                new Product { Name = "Gül ve Lale Karışımı", Description = "Kırmızı gül ve beyaz lale karışımı özel buket.", Price = 480, ImageUrl = "https://images.unsplash.com/photo-1520763185298-1b58670fba46?w=600", CategoryId = 2, InStock = true },
                 new Product { Name = "Sümbül Saksı", Description = "Bahar müjdesi sümbül saksısı.", Price = 220, ImageUrl = "https://images.unsplash.com/photo-1612544448445-10c0d30e0b89?w=600", CategoryId = 1, InStock = true },
                 new Product { Name = "Bambu Şans Bitkisi", Description = "Ofise şans getiren bambu bitkisi.", Price = 190, ImageUrl = "https://images.unsplash.com/photo-1572688484438-313b3ac4146d?w=600", CategoryId = 4, InStock = true },
                 new Product { Name = "Pembe Gül Buketi", Description = "20 adet pembe gül ile romantik buket.", Price = 410, ImageUrl = "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?w=600", CategoryId = 2, InStock = true },
             };
 
             db.Products.AddRange(products);
+            db.SaveChanges();
+        }
+
+        private static void SeedSiteContent(ApplicationDbContext db)
+        {
+            if (db.SiteContents.Any()) return;
+            db.SiteContents.Add(new SiteContent());
+            db.SaveChanges();
+        }
+
+        private static void SeedAdminUser(ApplicationDbContext db)
+        {
+            if (db.AdminUsers.Any()) return;
+
+            var (hash, salt) = PasswordHasher.HashPassword("admin123");
+            db.AdminUsers.Add(new AdminUser
+            {
+                Username = "admin",
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                FullName = "Yönetici"
+            });
             db.SaveChanges();
         }
     }

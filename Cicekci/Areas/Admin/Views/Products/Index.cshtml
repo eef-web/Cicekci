@@ -1,0 +1,58 @@
+@model IEnumerable<Cicekci.Models.Product>
+@{
+    ViewData["Title"] = "Ürünler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-bag"></i> Ürünler</h2>
+    <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-lg"></i> Yeni Ürün</a>
+</div>
+
+<div class="card stat-card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Görsel</th>
+                    <th>Ürün Adı</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" />
+                            }
+                        </td>
+                        <td>@item.Name</td>
+                        <td><span class="badge bg-info">@(item.Category?.Name ?? "-")</span></td>
+                        <td>@item.Price.ToString("N0") TL</td>
+                        <td>
+                            @if (item.InStock)
+                            {
+                                <span class="badge bg-success">Stokta</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Tükendi</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

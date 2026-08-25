@@ -1,4 +1,4 @@
-using Cicekci.Models;
+using Cicekci.Data;
 using Cicekci.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,48 +6,60 @@ namespace Cicekci.Controllers
 {
     public class CartController : Controller
     {
-        private readonly CartService _cart;
+        private readonly CartService _cartService;
+        private readonly ApplicationDbContext _db;
 
-        public CartController(CartService cart)
+        public CartController(CartService cartService, ApplicationDbContext db)
         {
-            _cart = cart;
+            _cartService = cartService;
+            _db = db;
         }
 
-        // Sepet sayfası
+        // Sepeti göster
         public IActionResult Index()
         {
-            var items = _cart.GetCart();
-            ViewBag.Total = _cart.GetTotal();
-            ViewBag.Count = _cart.GetCount();
+            var items = _cartService.GetCartItems();
+            ViewBag.Total = _cartService.GetTotal();
             return View(items);
+        }
+
+        // Sepete ürün ekle
+        public IActionResult Add(int productId, int quantity = 1)
+        {
+            var product = _db.Products.Find(productId);
+            if (product == null) return NotFound();
+
+            _cartService.AddItem(productId, product.Name, product.Price, quantity, product.ImageUrl);
+            TempData["Success"] = $"{product.Name} sepete eklendi.";
+            return RedirectToAction("Index");
         }
 
         // Sepetten ürün çıkar
         public IActionResult Remove(int productId)
         {
-            _cart.RemoveFromCart(productId);
+            _cartService.RemoveItem(productId);
             return RedirectToAction("Index");
         }
 
-        // Adet güncelle
+        // Sepetteki adet güncelle
         [HttpPost]
-        public IActionResult Update(int productId, int quantity)
+        public IActionResult UpdateQuantity(int productId, int quantity)
         {
-            _cart.UpdateQuantity(productId, quantity);
+            if (quantity <= 0)
+            {
+                _cartService.RemoveItem(productId);
+            }
+            else
+            {
+                _cartService.UpdateQuantity(productId, quantity);
+            }
             return RedirectToAction("Index");
         }
 
-        // Siparişi tamamla (örnek)
-        public IActionResult Checkout()
+        // Sepeti boşalt
+        public IActionResult Clear()
         {
-            if (_cart.GetCount() == 0)
-            {
-                TempData["Error"] = "Sepetiniz boş!";
-                return RedirectToAction("Index");
-            }
-
-            _cart.ClearCart();
-            TempData["Success"] = "Siparişiniz başarıyla alındı! Teşekkür ederiz. 🌸";
+            _cartService.Clear();
             return RedirectToAction("Index");
         }
     }

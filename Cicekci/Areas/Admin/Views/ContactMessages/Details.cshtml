@@ -1,0 +1,34 @@
+@model Cicekci.Models.ContactMessage
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+}
+
+<h2 class="mb-4"><i class="bi bi-envelope-open"></i> Mesaj Detayı</h2>
+
+<div class="card stat-card">
+    <div class="card-body p-4">
+        <table class="table table-borderless">
+            <tr>
+                <th style="width:150px;">Ad Soyad</th>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <th>E-posta</th>
+                <td>@Model.Email</td>
+            </tr>
+            <tr>
+                <th>Telefon</th>
+                <td>@(Model.Phone ?? "-")</td>
+            </tr>
+            <tr>
+                <th>Tarih</th>
+                <td>@Model.SentDate.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+            <tr>
+                <th>Mesaj</th>
+                <td>@Model.Message</td>
+            </tr>
+        </table>
+        <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Geri</a>
+    </div>
+</div>
