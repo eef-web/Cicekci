@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// SQLite veri tabanı bağlantısı
+// MSSQL veri tabanı bağlantısı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=cicekci.db";
+    ?? "Server=(localdb)\\MSSQLLocalDB;Database=Cicekci;Trusted_Connection=True;MultipleActiveResultSets=true";
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString));
 
 // Sepet için session
 builder.Services.AddDistributedMemoryCache();
@@ -48,26 +48,8 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    // Önce DB yoksa oluştur
+    // DB yoksa oluştur, varsa şema kontrolü yap
     db.Database.EnsureCreated();
-
-    // Eski şemadan gelen DB'lerde Orders tablosu olmayabilir
-    // Kontrol et, yoksa DB'yi sil ve yeniden oluştur
-    bool needsRecreate = false;
-    try
-    {
-        db.Database.ExecuteSqlRaw("SELECT 1 FROM Orders LIMIT 1");
-    }
-    catch
-    {
-        needsRecreate = true;
-    }
-
-    if (needsRecreate)
-    {
-        db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
-    }
 
     // Örnek veri ekle
     DbSeeder.Seed(db);
