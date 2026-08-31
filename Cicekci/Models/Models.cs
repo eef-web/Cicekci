@@ -258,4 +258,84 @@ namespace Cicekci.Models
         [Display(Name = "Şifre")]
         public string Password { get; set; } = string.Empty;
     }
+
+    // --- Yönetim panelinde Anasayfa/Hakkımızda/İletişim içeriklerini
+    // --- ayrı ayrı düzenlemek için kullanılan bölüm bazlı ViewModel'ler ---
+
+    // Anasayfa içeriği düzenleme ViewModel'i
+    public class HomeContentViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Başlık zorunludur.")]
+        [StringLength(150)]
+        [Display(Name = "Anasayfa Başlık")]
+        public string HomeHeroTitle { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Alt başlık zorunludur.")]
+        [StringLength(250)]
+        [Display(Name = "Anasayfa Alt Başlık")]
+        public string HomeHeroSubtitle { get; set; } = string.Empty;
+    }
+
+    // Hakkımızda içeriği düzenleme ViewModel'i
+    public class AboutContentViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Başlık zorunludur.")]
+        [StringLength(150)]
+        [Display(Name = "Hakkımızda Başlık")]
+        public string AboutTitle { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Ana metin zorunludur.")]
+        [StringLength(1000)]
+        [Display(Name = "Hakkımızda Ana Metin")]
+        public string AboutMainText { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Detay metin zorunludur.")]
+        [StringLength(1500)]
+        [Display(Name = "Hakkımızda Detay Metin")]
+        public string AboutDetailText { get; set; } = string.Empty;
+
+        [Required, StringLength(20)]
+        [Display(Name = "Yıllık Tecrübe")]
+        public string StatYears { get; set; } = string.Empty;
+
+        [Required, StringLength(20)]
+        [Display(Name = "Mutlu Müşteri Sayısı")]
+        public string StatCustomers { get; set; } = string.Empty;
+
+        [Required, StringLength(20)]
+        [Display(Name = "Çiçek Çeşidi")]
+        public string StatProducts { get; set; } = string.Empty;
+    }
+
+    // İletişim içeriği düzenleme ViewModel'i
+    public class ContactContentViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Adres zorunludur.")]
+        [StringLength(150)]
+        [Display(Name = "Adres")]
+        public string ContactAddress { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Telefon zorunludur.")]
+        [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
+        [StringLength(30)]
+        [Display(Name = "Telefon")]
+        public string ContactPhone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-posta zorunludur.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+        [StringLength(100)]
+        [Display(Name = "E-posta")]
+        public string ContactEmail { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Çalışma saatleri zorunludur.")]
+        [StringLength(150)]
+        [Display(Name = "Çalışma Saatleri")]
+        public string ContactWorkingHours { get; set; } = string.Empty;
+    }
 }

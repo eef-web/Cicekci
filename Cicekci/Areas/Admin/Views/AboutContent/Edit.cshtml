@@ -1,0 +1,50 @@
+@model Cicekci.Models.AboutContentViewModel
+@{
+    ViewData["Title"] = "Hakkımızda İçeriğini Düzenle";
+}
+
+<h2 class="mb-4"><i class="bi bi-info-circle"></i> Hakkımızda İçeriğini Düzenle</h2>
+
+<div class="card stat-card">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label asp-for="AboutTitle" class="form-label"></label>
+                <input asp-for="AboutTitle" class="form-control" />
+                <span asp-validation-for="AboutTitle" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="AboutMainText" class="form-label"></label>
+                <textarea asp-for="AboutMainText" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="AboutMainText" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="AboutDetailText" class="form-label"></label>
+                <textarea asp-for="AboutDetailText" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="AboutDetailText" class="text-danger small"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StatYears" class="form-label"></label>
+                    <input asp-for="StatYears" class="form-control" />
+                    <span asp-validation-for="StatYears" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StatCustomers" class="form-label"></label>
+                    <input asp-for="StatCustomers" class="form-control" />
+                    <span asp-validation-for="StatCustomers" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StatProducts" class="form-label"></label>
+                    <input asp-for="StatProducts" class="form-control" />
+                    <span asp-validation-for="StatProducts" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Kaydet</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+        </form>
+    </div>
+</div>

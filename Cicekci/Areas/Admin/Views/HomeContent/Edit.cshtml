@@ -1,0 +1,28 @@
+@model Cicekci.Models.HomeContentViewModel
+@{
+    ViewData["Title"] = "Anasayfa İçeriğini Düzenle";
+}
+
+<h2 class="mb-4"><i class="bi bi-house"></i> Anasayfa İçeriğini Düzenle</h2>
+
+<div class="card stat-card">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label asp-for="HomeHeroTitle" class="form-label"></label>
+                <input asp-for="HomeHeroTitle" class="form-control" />
+                <span asp-validation-for="HomeHeroTitle" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="HomeHeroSubtitle" class="form-label"></label>
+                <input asp-for="HomeHeroSubtitle" class="form-control" />
+                <span asp-validation-for="HomeHeroSubtitle" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Kaydet</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+        </form>
+    </div>
+</div>
