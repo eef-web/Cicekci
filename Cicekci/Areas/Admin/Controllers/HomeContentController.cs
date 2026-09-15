@@ -20,51 +20,57 @@ namespace Cicekci.Areas.Admin.Controllers
         // Index: Anasayfa içeriğinin özetini görüntüle
         public IActionResult Index()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
+            if (content == null)
+            {
+                // İçerik henüz elle girilmemişse düzenleme formuna yönlendir
+                TempData["Info"] = "Anasayfa içeriği henüz oluşturulmadı. Aşağıdaki formu doldurarak ekleyebilirsiniz.";
+                return RedirectToAction("Edit");
+            }
             return View(content);
         }
 
         // Edit GET: düzenleme formunu göster
         public IActionResult Edit()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
             var model = new HomeContentViewModel
             {
-                Id = content.Id,
-                HomeHeroTitle = content.HomeHeroTitle,
-                HomeHeroSubtitle = content.HomeHeroSubtitle
+                Id = content?.Id ?? 0,
+                HomeHeroTitle = content?.HomeHeroTitle ?? string.Empty,
+                HomeHeroSubtitle = content?.HomeHeroSubtitle ?? string.Empty
             };
             return View(model);
         }
 
-        // Edit POST: sadece Anasayfa alanlarını güncelle
+        // Edit POST: Anasayfa alanlarını günceller; içerik yoksa elle girilen değerlerle oluşturur
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(HomeContentViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = _db.SiteContents.Find(model.Id);
-            if (content == null) return NotFound();
+            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
 
-            content.HomeHeroTitle = model.HomeHeroTitle;
-            content.HomeHeroSubtitle = model.HomeHeroSubtitle;
-            _db.SaveChanges();
-
-            TempData["Success"] = "Anasayfa içeriği güncellendi.";
-            return RedirectToAction("Index");
-        }
-
-        private SiteContent GetOrCreateContent()
-        {
-            var content = _db.SiteContents.FirstOrDefault();
             if (content == null)
             {
-                content = new SiteContent();
+                content = new SiteContent
+                {
+                    HomeHeroTitle = model.HomeHeroTitle,
+                    HomeHeroSubtitle = model.HomeHeroSubtitle
+                };
                 _db.SiteContents.Add(content);
-                _db.SaveChanges();
             }
-            return content;
+            else
+            {
+                content.HomeHeroTitle = model.HomeHeroTitle;
+                content.HomeHeroSubtitle = model.HomeHeroSubtitle;
+            }
+
+            _db.SaveChanges();
+
+            TempData["Success"] = "Anasayfa içeriği kaydedildi.";
+            return RedirectToAction("Index");
         }
     }
 }

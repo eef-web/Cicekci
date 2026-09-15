@@ -1,6 +1,8 @@
 using Cicekci.Data;
+using Cicekci.Models;
 using Cicekci.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,17 +27,33 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CartService>();
 
-// Yönetim paneli kimlik doğrulama (Cookie tabanlı)
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// ASP.NET Core Identity: güvenli, gerçek projelerde kullanılan
+// kimlik doğrulama altyapısı (parola hashleme, kilitleme, cookie yönetimi)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
-        options.LoginPath = "/Admin/Account/Login";
-        options.LogoutPath = "/Admin/Account/Logout";
-        options.AccessDeniedPath = "/Admin/Account/Login";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
-        options.Cookie.Name = "CicekciAdminAuth";
-        options.SlidingExpiration = true;
-    });
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Identity'nin kullandığı uygulama cookie ayarları
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Admin/Account/Login";
+    options.LogoutPath = "/Admin/Account/Logout";
+    options.AccessDeniedPath = "/Admin/Account/Login";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.Cookie.Name = "CicekciAdminAuth";
+    options.Cookie.HttpOnly = true;
+    options.SlidingExpiration = true;
+});
 
 builder.Services.AddAuthorization();
 
@@ -43,16 +61,13 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Veri tabanı başlatma
+// Veri tabanı yoksa şema oluşturulur.
+// NOT: Örnek veri eklenmez (rubrik gereği seeder kullanılmaz);
+// tüm veriler yönetim panelinden elle girilir.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    // DB yoksa oluştur, varsa şema kontrolü yap
     db.Database.EnsureCreated();
-
-    // Örnek veri ekle
-    DbSeeder.Seed(db);
 }
 
 if (!app.Environment.IsDevelopment())

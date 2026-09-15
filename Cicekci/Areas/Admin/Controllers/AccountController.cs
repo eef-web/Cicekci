@@ -1,30 +1,42 @@
 using Cicekci.Data;
 using Cicekci.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cicekci.Areas.Admin.Controllers
 {
+    // Kimlik doğrulama: ASP.NET Core Identity (SignInManager / UserManager)
     [Area("Admin")]
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountController(ApplicationDbContext db)
+        public AccountController(
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager)
         {
-            _db = db;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
+        // Giriş formu — kullanıcı yoksa ilk kurulum sayfasına yönlendirir
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = null)
+        public async Task<IActionResult> Login(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Dashboard");
             }
+
+            // Hiç yönetici hesabı yoksa ilk kurulum ekranına git
+            if (!await _userManager.Users.AnyAsync())
+            {
+                return RedirectToAction("Setup");
+            }
+
             ViewBag.ReturnUrl = returnUrl;
             return View(new LoginViewModel());
         }
@@ -40,42 +52,87 @@ namespace Cicekci.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var user = _db.AdminUsers.FirstOrDefault(u => u.Username == model.Username);
-            if (user == null || !PasswordHasher.Verify(model.Password, user.PasswordHash, user.PasswordSalt))
+            // Identity ile güvenli giriş; hatalı denemelerde hesap kilitlenir
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+            if (result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı.");
-                ViewBag.ReturnUrl = returnUrl;
-                return View(model);
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Dashboard");
             }
 
-            var claims = new List<Claim>
+            if (result.IsLockedOut)
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.GivenName, user.FullName),
-                new Claim(ClaimTypes.Role, "Admin"),
+                ModelState.AddModelError(string.Empty, "Çok fazla hatalı deneme yapıldı. Hesabınız geçici olarak kilitlendi, lütfen bir süre sonra tekrar deneyin.");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+            return View(model);
+        }
+
+        // İlk kurulum: yönetici hesabı henüz yoksa oluşturma ekranı.
+        // Veri tabanına elle veri girişinin ilk adımıdır (seeder kullanılmaz).
+        [AllowAnonymous]
+        public async Task<IActionResult> Setup()
+        {
+            if (await _userManager.Users.AnyAsync())
+            {
+                return RedirectToAction("Login");
+            }
+            return View(new SetupViewModel());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Setup(SetupViewModel model)
+        {
+            // Sadece hiç kullanıcı yokken çalışır
+            if (await _userManager.Users.AnyAsync())
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (!ModelState.IsValid) return View(model);
+
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+                EmailConfirmed = true
             };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
+            if (result.Succeeded)
             {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
-            });
-
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
+                await _userManager.AddToRoleAsync(user, "Admin");
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                TempData["Success"] = "Yönetici hesabı oluşturuldu. Yönetim paneline hoş geldiniz!";
+                return RedirectToAction("Index", "Dashboard");
             }
 
-            return RedirectToAction("Index", "Dashboard");
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
 
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
     }

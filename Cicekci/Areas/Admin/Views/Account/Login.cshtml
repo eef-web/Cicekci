@@ -22,25 +22,26 @@
                 <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 
                 <div class="mb-3">
-                    <label asp-for="Username" class="form-label"></label>
-                    <input asp-for="Username" class="form-control form-control-lg" placeholder="Kullanıcı adı" />
-                    <span asp-validation-for="Username" class="text-danger small"></span>
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control form-control-lg" placeholder="E-posta adresiniz" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Şifre" />
+                    <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Şifreniz" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label"></label>
                 </div>
 
                 <button type="submit" class="btn btn-lg w-100 text-white" style="background: #2d3a27; border-radius: 10px;">
                     <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
                 </button>
             </form>
-
-            <div class="text-center mt-3">
-                <small class="text-muted">Varsayılan: <strong>admin</strong> / <strong>admin123</strong></small>
-            </div>
         </div>
     </div>
 </div>

@@ -20,55 +20,63 @@ namespace Cicekci.Areas.Admin.Controllers
         // Index: İletişim içeriğinin özetini görüntüle
         public IActionResult Index()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
+            if (content == null)
+            {
+                // İçerik henüz elle girilmemişse düzenleme formuna yönlendir
+                TempData["Info"] = "İletişim içeriği henüz oluşturulmadı. Aşağıdaki formu doldurarak ekleyebilirsiniz.";
+                return RedirectToAction("Edit");
+            }
             return View(content);
         }
 
         // Edit GET: düzenleme formunu göster
         public IActionResult Edit()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
             var model = new ContactContentViewModel
             {
-                Id = content.Id,
-                ContactAddress = content.ContactAddress,
-                ContactPhone = content.ContactPhone,
-                ContactEmail = content.ContactEmail,
-                ContactWorkingHours = content.ContactWorkingHours
+                Id = content?.Id ?? 0,
+                ContactAddress = content?.ContactAddress ?? string.Empty,
+                ContactPhone = content?.ContactPhone ?? string.Empty,
+                ContactEmail = content?.ContactEmail ?? string.Empty,
+                ContactWorkingHours = content?.ContactWorkingHours ?? string.Empty
             };
             return View(model);
         }
 
-        // Edit POST: sadece İletişim alanlarını güncelle
+        // Edit POST: İletişim alanlarını günceller; içerik yoksa elle girilen değerlerle oluşturur
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(ContactContentViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = _db.SiteContents.Find(model.Id);
-            if (content == null) return NotFound();
+            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
 
-            content.ContactAddress = model.ContactAddress;
-            content.ContactPhone = model.ContactPhone;
-            content.ContactEmail = model.ContactEmail;
-            content.ContactWorkingHours = model.ContactWorkingHours;
-            _db.SaveChanges();
-
-            TempData["Success"] = "İletişim içeriği güncellendi.";
-            return RedirectToAction("Index");
-        }
-
-        private SiteContent GetOrCreateContent()
-        {
-            var content = _db.SiteContents.FirstOrDefault();
             if (content == null)
             {
-                content = new SiteContent();
+                content = new SiteContent
+                {
+                    ContactAddress = model.ContactAddress,
+                    ContactPhone = model.ContactPhone,
+                    ContactEmail = model.ContactEmail,
+                    ContactWorkingHours = model.ContactWorkingHours
+                };
                 _db.SiteContents.Add(content);
-                _db.SaveChanges();
             }
-            return content;
+            else
+            {
+                content.ContactAddress = model.ContactAddress;
+                content.ContactPhone = model.ContactPhone;
+                content.ContactEmail = model.ContactEmail;
+                content.ContactWorkingHours = model.ContactWorkingHours;
+            }
+
+            _db.SaveChanges();
+
+            TempData["Success"] = "İletişim içeriği kaydedildi.";
+            return RedirectToAction("Index");
         }
     }
 }

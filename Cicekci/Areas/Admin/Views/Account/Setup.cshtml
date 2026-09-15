@@ -1,0 +1,57 @@
+@model SetupViewModel
+@{
+    ViewData["Title"] = "İlk Kurulum";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background: linear-gradient(135deg, #2d3a27, #4a5d3a);">
+    <div class="card shadow-lg border-0" style="width: 440px; border-radius: 16px;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h2 style="color: #2d3a27;"><i class="bi bi-flower1"></i> Çiçekçi</h2>
+                <p class="text-muted">Yönetim Paneli — İlk Kurulum</p>
+            </div>
+
+            <div class="alert alert-info small mb-4">
+                Sistemde henüz yönetici hesabı yok. Yönetim panelini kullanabilmek için
+                bir yönetici hesabı oluşturun. Bu ekran yalnızca bir kez görünür.
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(false)
+                </div>
+            }
+
+            <form asp-action="Setup" method="post">
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" placeholder="Ad Soyad" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="ornek@site.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="En az 8 karakter, harf + rakam" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Şifrenizi tekrar girin" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-lg w-100 text-white" style="background: #2d3a27; border-radius: 10px;">
+                    <i class="bi bi-person-plus"></i> Yönetici Hesabı Oluştur
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

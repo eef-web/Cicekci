@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace Cicekci.Models
 {
@@ -227,21 +228,11 @@ namespace Cicekci.Models
         public string ContactWorkingHours { get; set; } = "Pazartesi - Cumartesi: 09:00 - 21:00 / Pazar: 10:00 - 18:00";
     }
 
-    // Yönetim paneli kullanıcısı (kimlik doğrulama için)
-    public class AdminUser
+    // Yönetim paneli kullanıcısı — ASP.NET Core Identity tabanlı
+    public class ApplicationUser : IdentityUser
     {
-        public int Id { get; set; }
-
-        [Required, StringLength(50)]
-        [Display(Name = "Kullanıcı Adı")]
-        public string Username { get; set; } = string.Empty;
-
-        [Required]
-        public string PasswordHash { get; set; } = string.Empty;
-
-        [Required]
-        public string PasswordSalt { get; set; } = string.Empty;
-
+        [Required(ErrorMessage = "Ad Soyad zorunludur.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Ad Soyad 2-100 karakter olmalıdır.")]
         [Display(Name = "Ad Soyad")]
         public string FullName { get; set; } = "Yönetici";
     }
@@ -249,14 +240,44 @@ namespace Cicekci.Models
     // Admin giriş formu için ViewModel
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Kullanıcı adı zorunludur.")]
-        [Display(Name = "Kullanıcı Adı")]
-        public string Username { get; set; } = string.Empty;
+        [Required(ErrorMessage = "E-posta zorunludur.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+        [Display(Name = "E-posta")]
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Şifre zorunludur.")]
         [DataType(DataType.Password)]
         [Display(Name = "Şifre")]
         public string Password { get; set; } = string.Empty;
+
+        [Display(Name = "Beni Hatırla")]
+        public bool RememberMe { get; set; }
+    }
+
+    // İlk kurulum: yönetici hesabı oluşturma formu (hiç kullanıcı yokken çalışır)
+    public class SetupViewModel
+    {
+        [Required(ErrorMessage = "Ad Soyad zorunludur.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Ad Soyad 2-100 karakter olmalıdır.")]
+        [Display(Name = "Ad Soyad")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-posta zorunludur.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+        [Display(Name = "E-posta")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Şifre zorunludur.")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre en az 8 karakter olmalıdır.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Şifre")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Şifre tekrarı zorunludur.")]
+        [DataType(DataType.Password)]
+        [Compare(nameof(Password), ErrorMessage = "Şifreler eşleşmiyor.")]
+        [Display(Name = "Şifre Tekrar")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 
     // --- Yönetim panelinde Anasayfa/Hakkımızda/İletişim içeriklerini

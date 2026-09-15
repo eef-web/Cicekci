@@ -20,59 +20,69 @@ namespace Cicekci.Areas.Admin.Controllers
         // Index: Hakkımızda içeriğinin özetini görüntüle
         public IActionResult Index()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
+            if (content == null)
+            {
+                // İçerik henüz elle girilmemişse düzenleme formuna yönlendir
+                TempData["Info"] = "Hakkımızda içeriği henüz oluşturulmadı. Aşağıdaki formu doldurarak ekleyebilirsiniz.";
+                return RedirectToAction("Edit");
+            }
             return View(content);
         }
 
         // Edit GET: düzenleme formunu göster
         public IActionResult Edit()
         {
-            var content = GetOrCreateContent();
+            var content = _db.SiteContents.FirstOrDefault();
             var model = new AboutContentViewModel
             {
-                Id = content.Id,
-                AboutTitle = content.AboutTitle,
-                AboutMainText = content.AboutMainText,
-                AboutDetailText = content.AboutDetailText,
-                StatYears = content.StatYears,
-                StatCustomers = content.StatCustomers,
-                StatProducts = content.StatProducts
+                Id = content?.Id ?? 0,
+                AboutTitle = content?.AboutTitle ?? string.Empty,
+                AboutMainText = content?.AboutMainText ?? string.Empty,
+                AboutDetailText = content?.AboutDetailText ?? string.Empty,
+                StatYears = content?.StatYears ?? string.Empty,
+                StatCustomers = content?.StatCustomers ?? string.Empty,
+                StatProducts = content?.StatProducts ?? string.Empty
             };
             return View(model);
         }
 
-        // Edit POST: sadece Hakkımızda alanlarını güncelle
+        // Edit POST: Hakkımızda alanlarını günceller; içerik yoksa elle girilen değerlerle oluşturur
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(AboutContentViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = _db.SiteContents.Find(model.Id);
-            if (content == null) return NotFound();
+            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
 
-            content.AboutTitle = model.AboutTitle;
-            content.AboutMainText = model.AboutMainText;
-            content.AboutDetailText = model.AboutDetailText;
-            content.StatYears = model.StatYears;
-            content.StatCustomers = model.StatCustomers;
-            content.StatProducts = model.StatProducts;
-            _db.SaveChanges();
-
-            TempData["Success"] = "Hakkımızda içeriği güncellendi.";
-            return RedirectToAction("Index");
-        }
-
-        private SiteContent GetOrCreateContent()
-        {
-            var content = _db.SiteContents.FirstOrDefault();
             if (content == null)
             {
-                content = new SiteContent();
+                content = new SiteContent
+                {
+                    AboutTitle = model.AboutTitle,
+                    AboutMainText = model.AboutMainText,
+                    AboutDetailText = model.AboutDetailText,
+                    StatYears = model.StatYears,
+                    StatCustomers = model.StatCustomers,
+                    StatProducts = model.StatProducts
+                };
                 _db.SiteContents.Add(content);
-                _db.SaveChanges();
             }
-            return content;
+            else
+            {
+                content.AboutTitle = model.AboutTitle;
+                content.AboutMainText = model.AboutMainText;
+                content.AboutDetailText = model.AboutDetailText;
+                content.StatYears = model.StatYears;
+                content.StatCustomers = model.StatCustomers;
+                content.StatProducts = model.StatProducts;
+            }
+
+            _db.SaveChanges();
+
+            TempData["Success"] = "Hakkımızda içeriği kaydedildi.";
+            return RedirectToAction("Index");
         }
     }
 }
