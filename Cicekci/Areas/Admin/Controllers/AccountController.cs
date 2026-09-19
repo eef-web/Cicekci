@@ -13,13 +13,16 @@ namespace Cicekci.Areas.Admin.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountController(
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // Giriş formu — kullanıcı yoksa ilk kurulum sayfasına yönlendirir
@@ -115,6 +118,12 @@ namespace Cicekci.Areas.Admin.Controllers
 
             if (result.Succeeded)
             {
+                // Admin rolu hic yoksa olustur (seeder kullanilmadigi icin burada yonetilir)
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
                 await _userManager.AddToRoleAsync(user, "Admin");
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 TempData["Success"] = "Yönetici hesabı oluşturuldu. Yönetim paneline hoş geldiniz!";
