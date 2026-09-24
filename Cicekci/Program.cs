@@ -7,9 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// MSSQL veri tabanı bağlantısı
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Server=(localdb)\\MSSQLLocalDB;Database=Cicekci;Trusted_Connection=True;MultipleActiveResultSets=true";
+// MSSQL veri tabanı bağlantısı — veri tabanı dosyası (Cicekci.mdf) proje klasöründeki
+// App_Data içinde tutulur. Böylece doldurulan veri tabanı dosyası proje klasörüyle
+// birlikte taşınabilir: teslim paketinde veriler hazır görünür.
+var mdfPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "Cicekci.mdf");
+var connectionString =
+    $"Server=(localdb)\\MSSQLLocalDB;AttachDbFilename={mdfPath};Trusted_Connection=True;MultipleActiveResultSets=true";
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

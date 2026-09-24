@@ -17,6 +17,10 @@ obj/
 *.log
 logs/
 
+## Veri tabani dosyalari (teslim ziplerine elle eklenir, repoya girmez)
+App_Data/*.mdf
+App_Data/*.ldf
+
 ## OS
 .DS_Store
 Thumbs.db
