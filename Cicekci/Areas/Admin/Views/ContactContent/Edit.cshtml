@@ -33,6 +33,12 @@
                 <span asp-validation-for="ContactWorkingHours" class="text-danger small"></span>
             </div>
 
+            <div class="mb-3">
+                <label asp-for="ContactTitle" class="form-label"></label>
+                <input asp-for="ContactTitle" class="form-control" />
+                <span asp-validation-for="ContactTitle" class="text-danger small"></span>
+            </div>
+
             <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Kaydet</button>
             <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
         </form>

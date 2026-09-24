@@ -40,6 +40,7 @@ namespace Cicekci.Areas.Admin.Controllers
                 AboutTitle = content?.AboutTitle ?? string.Empty,
                 AboutMainText = content?.AboutMainText ?? string.Empty,
                 AboutDetailText = content?.AboutDetailText ?? string.Empty,
+                AboutImageUrl = content?.AboutImageUrl,
                 StatYears = content?.StatYears ?? string.Empty,
                 StatCustomers = content?.StatCustomers ?? string.Empty,
                 StatProducts = content?.StatProducts ?? string.Empty
@@ -54,7 +55,7 @@ namespace Cicekci.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
+            var content = _db.SiteContents.FirstOrDefault();
 
             if (content == null)
             {
@@ -63,6 +64,7 @@ namespace Cicekci.Areas.Admin.Controllers
                     AboutTitle = model.AboutTitle,
                     AboutMainText = model.AboutMainText,
                     AboutDetailText = model.AboutDetailText,
+                    AboutImageUrl = model.AboutImageUrl,
                     StatYears = model.StatYears,
                     StatCustomers = model.StatCustomers,
                     StatProducts = model.StatProducts
@@ -74,6 +76,7 @@ namespace Cicekci.Areas.Admin.Controllers
                 content.AboutTitle = model.AboutTitle;
                 content.AboutMainText = model.AboutMainText;
                 content.AboutDetailText = model.AboutDetailText;
+                content.AboutImageUrl = model.AboutImageUrl;
                 content.StatYears = model.StatYears;
                 content.StatCustomers = model.StatCustomers;
                 content.StatProducts = model.StatProducts;

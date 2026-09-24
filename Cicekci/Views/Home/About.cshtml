@@ -7,7 +7,10 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <img src="https://cdn.phototourl.com/member/2026-08-25-2dd365c6-e0ce-4deb-b2bc-f2ee18931260.jpg" class="img-fluid rounded shadow" style="border-radius: 16px;" />
+                @if (!string.IsNullOrWhiteSpace(Model.AboutImageUrl))
+                {
+                    <img src="@Model.AboutImageUrl" alt="@Model.AboutTitle" class="img-fluid rounded shadow" style="border-radius: 16px;" />
+                }
             </div>
             <div class="col-md-6 mt-4 mt-md-0">
                 <h2 style="color: #2d3a27;">@Model.AboutTitle</h2>

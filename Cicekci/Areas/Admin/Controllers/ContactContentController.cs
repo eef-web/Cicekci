@@ -40,7 +40,8 @@ namespace Cicekci.Areas.Admin.Controllers
                 ContactAddress = content?.ContactAddress ?? string.Empty,
                 ContactPhone = content?.ContactPhone ?? string.Empty,
                 ContactEmail = content?.ContactEmail ?? string.Empty,
-                ContactWorkingHours = content?.ContactWorkingHours ?? string.Empty
+                ContactWorkingHours = content?.ContactWorkingHours ?? string.Empty,
+                ContactTitle = content?.ContactTitle,
             };
             return View(model);
         }
@@ -52,7 +53,7 @@ namespace Cicekci.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
+            var content = _db.SiteContents.FirstOrDefault();
 
             if (content == null)
             {
@@ -61,7 +62,8 @@ namespace Cicekci.Areas.Admin.Controllers
                     ContactAddress = model.ContactAddress,
                     ContactPhone = model.ContactPhone,
                     ContactEmail = model.ContactEmail,
-                    ContactWorkingHours = model.ContactWorkingHours
+                    ContactWorkingHours = model.ContactWorkingHours,
+                    ContactTitle = model.ContactTitle,
                 };
                 _db.SiteContents.Add(content);
             }
@@ -71,6 +73,7 @@ namespace Cicekci.Areas.Admin.Controllers
                 content.ContactPhone = model.ContactPhone;
                 content.ContactEmail = model.ContactEmail;
                 content.ContactWorkingHours = model.ContactWorkingHours;
+                content.ContactTitle = model.ContactTitle;
             }
 
             _db.SaveChanges();

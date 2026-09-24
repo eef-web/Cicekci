@@ -38,7 +38,18 @@ namespace Cicekci.Areas.Admin.Controllers
             {
                 Id = content?.Id ?? 0,
                 HomeHeroTitle = content?.HomeHeroTitle ?? string.Empty,
-                HomeHeroSubtitle = content?.HomeHeroSubtitle ?? string.Empty
+                HomeHeroSubtitle = content?.HomeHeroSubtitle ?? string.Empty,
+                HomeHeroImageUrl = content?.HomeHeroImageUrl,
+                FeaturedTitle = content?.FeaturedTitle,
+                WhyTitle = content?.WhyTitle,
+                Benefit1Title = content?.Benefit1Title,
+                Benefit1Description = content?.Benefit1Description,
+                Benefit2Title = content?.Benefit2Title,
+                Benefit2Description = content?.Benefit2Description,
+                Benefit3Title = content?.Benefit3Title,
+                Benefit3Description = content?.Benefit3Description,
+                Benefit4Title = content?.Benefit4Title,
+                Benefit4Description = content?.Benefit4Description,
             };
             return View(model);
         }
@@ -50,14 +61,25 @@ namespace Cicekci.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var content = model.Id > 0 ? _db.SiteContents.Find(model.Id) : null;
+            var content = _db.SiteContents.FirstOrDefault();
 
             if (content == null)
             {
                 content = new SiteContent
                 {
                     HomeHeroTitle = model.HomeHeroTitle,
-                    HomeHeroSubtitle = model.HomeHeroSubtitle
+                    HomeHeroSubtitle = model.HomeHeroSubtitle,
+                    HomeHeroImageUrl = model.HomeHeroImageUrl,
+                    FeaturedTitle = model.FeaturedTitle,
+                    WhyTitle = model.WhyTitle,
+                    Benefit1Title = model.Benefit1Title,
+                    Benefit1Description = model.Benefit1Description,
+                    Benefit2Title = model.Benefit2Title,
+                    Benefit2Description = model.Benefit2Description,
+                    Benefit3Title = model.Benefit3Title,
+                    Benefit3Description = model.Benefit3Description,
+                    Benefit4Title = model.Benefit4Title,
+                    Benefit4Description = model.Benefit4Description,
                 };
                 _db.SiteContents.Add(content);
             }
@@ -65,6 +87,17 @@ namespace Cicekci.Areas.Admin.Controllers
             {
                 content.HomeHeroTitle = model.HomeHeroTitle;
                 content.HomeHeroSubtitle = model.HomeHeroSubtitle;
+                content.HomeHeroImageUrl = model.HomeHeroImageUrl;
+                content.FeaturedTitle = model.FeaturedTitle;
+                content.WhyTitle = model.WhyTitle;
+                content.Benefit1Title = model.Benefit1Title;
+                content.Benefit1Description = model.Benefit1Description;
+                content.Benefit2Title = model.Benefit2Title;
+                content.Benefit2Description = model.Benefit2Description;
+                content.Benefit3Title = model.Benefit3Title;
+                content.Benefit3Description = model.Benefit3Description;
+                content.Benefit4Title = model.Benefit4Title;
+                content.Benefit4Description = model.Benefit4Description;
             }
 
             _db.SaveChanges();

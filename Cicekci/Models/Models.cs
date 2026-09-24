@@ -179,53 +179,107 @@ namespace Cicekci.Models
         // --- Anasayfa ---
         [Required, StringLength(150)]
         [Display(Name = "Anasayfa Başlık")]
-        public string HomeHeroTitle { get; set; } = "Sevdiklerinize Çiçek Gönderin";
+        public string HomeHeroTitle { get; set; } = string.Empty;
 
         [Required, StringLength(250)]
         [Display(Name = "Anasayfa Alt Başlık")]
-        public string HomeHeroSubtitle { get; set; } = "Taze çiçekler, hızlı teslimat, mutlu yüzler.";
+        public string HomeHeroSubtitle { get; set; } = string.Empty;
+
+        [Url(ErrorMessage = "Geçerli bir görsel URL'si giriniz.")]
+        [StringLength(2048)]
+        [Display(Name = "Anasayfa Kapak Görseli URL")]
+        public string? HomeHeroImageUrl { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "Öne Çıkan Ürünler Başlığı")]
+        public string? FeaturedTitle { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "Neden Biz Başlığı")]
+        public string? WhyTitle { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 1 Başlığı")]
+        public string? Benefit1Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 1 Açıklaması")]
+        public string? Benefit1Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 2 Başlığı")]
+        public string? Benefit2Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 2 Açıklaması")]
+        public string? Benefit2Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 3 Başlığı")]
+        public string? Benefit3Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 3 Açıklaması")]
+        public string? Benefit3Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 4 Başlığı")]
+        public string? Benefit4Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 4 Açıklaması")]
+        public string? Benefit4Description { get; set; }
+
+        [Url(ErrorMessage = "Geçerli bir görsel URL'si giriniz.")]
+        [StringLength(2048)]
+        [Display(Name = "Hakkımızda Görseli URL")]
+        public string? AboutImageUrl { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "İletişim Sayfası Başlığı")]
+        public string? ContactTitle { get; set; }
 
         // --- Hakkımızda ---
         [Required, StringLength(150)]
         [Display(Name = "Hakkımızda Başlık")]
-        public string AboutTitle { get; set; } = "Hakkımızda";
+        public string AboutTitle { get; set; } = string.Empty;
 
         [Required, StringLength(1000)]
         [Display(Name = "Hakkımızda Ana Metin")]
-        public string AboutMainText { get; set; } = "Çiçekçi olarak 2010 yılından beri sevdiklerinize en taze çiçekleri ulaştırıyoruz.";
+        public string AboutMainText { get; set; } = string.Empty;
 
         [Required, StringLength(1500)]
         [Display(Name = "Hakkımızda Detay Metin")]
-        public string AboutDetailText { get; set; } = "İstanbul merkezli işletmemiz, her buketi özenle hazırlar ve aynı gün teslimat hizmeti sunar.";
+        public string AboutDetailText { get; set; } = string.Empty;
 
         [Required, StringLength(20)]
         [Display(Name = "Yıllık Tecrübe")]
-        public string StatYears { get; set; } = "15+";
+        public string StatYears { get; set; } = string.Empty;
 
         [Required, StringLength(20)]
         [Display(Name = "Mutlu Müşteri Sayısı")]
-        public string StatCustomers { get; set; } = "50.000+";
+        public string StatCustomers { get; set; } = string.Empty;
 
         [Required, StringLength(20)]
         [Display(Name = "Çiçek Çeşidi")]
-        public string StatProducts { get; set; } = "500+";
+        public string StatProducts { get; set; } = string.Empty;
 
         // --- İletişim ---
         [Required, StringLength(150)]
         [Display(Name = "Adres")]
-        public string ContactAddress { get; set; } = "Antalya, Türkiye";
+        public string ContactAddress { get; set; } = string.Empty;
 
         [Required, Phone, StringLength(30)]
         [Display(Name = "Telefon")]
-        public string ContactPhone { get; set; } = "+90 242 000 00 00";
+        public string ContactPhone { get; set; } = string.Empty;
 
         [Required, EmailAddress, StringLength(100)]
         [Display(Name = "E-posta")]
-        public string ContactEmail { get; set; } = "info@cicekci.com";
+        public string ContactEmail { get; set; } = string.Empty;
 
         [Required, StringLength(150)]
         [Display(Name = "Çalışma Saatleri")]
-        public string ContactWorkingHours { get; set; } = "Pazartesi - Cumartesi: 09:00 - 21:00 / Pazar: 10:00 - 18:00";
+        public string ContactWorkingHours { get; set; } = string.Empty;
     }
 
     // Yönetim paneli kullanıcısı — ASP.NET Core Identity tabanlı
@@ -297,6 +351,51 @@ namespace Cicekci.Models
         [StringLength(250)]
         [Display(Name = "Anasayfa Alt Başlık")]
         public string HomeHeroSubtitle { get; set; } = string.Empty;
+        [Url(ErrorMessage = "Geçerli bir görsel URL'si giriniz.")]
+        [StringLength(2048)]
+        [Display(Name = "Kapak Görseli URL")]
+        public string? HomeHeroImageUrl { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "Öne Çıkan Ürünler Başlığı")]
+        public string? FeaturedTitle { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "Neden Biz Başlığı")]
+        public string? WhyTitle { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 1 Başlığı")]
+        public string? Benefit1Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 1 Açıklaması")]
+        public string? Benefit1Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 2 Başlığı")]
+        public string? Benefit2Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 2 Açıklaması")]
+        public string? Benefit2Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 3 Başlığı")]
+        public string? Benefit3Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 3 Açıklaması")]
+        public string? Benefit3Description { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Avantaj 4 Başlığı")]
+        public string? Benefit4Title { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Avantaj 4 Açıklaması")]
+        public string? Benefit4Description { get; set; }
+
     }
 
     // Hakkımızda içeriği düzenleme ViewModel'i
@@ -330,12 +429,21 @@ namespace Cicekci.Models
         [Required, StringLength(20)]
         [Display(Name = "Çiçek Çeşidi")]
         public string StatProducts { get; set; } = string.Empty;
+        [Url(ErrorMessage = "Geçerli bir görsel URL'si giriniz.")]
+        [StringLength(2048)]
+        [Display(Name = "Hakkımızda Görseli URL")]
+        public string? AboutImageUrl { get; set; }
+
     }
 
     // İletişim içeriği düzenleme ViewModel'i
     public class ContactContentViewModel
     {
         public int Id { get; set; }
+
+        [StringLength(150)]
+        [Display(Name = "İletişim Sayfası Başlığı")]
+        public string? ContactTitle { get; set; }
 
         [Required(ErrorMessage = "Adres zorunludur.")]
         [StringLength(150)]
