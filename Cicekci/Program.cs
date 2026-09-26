@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // birlikte taşınabilir: teslim paketinde veriler hazır görünür.
 var mdfPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "Cicekci.mdf");
 var connectionString =
-    $"Server=(localdb)\\MSSQLLocalDB;AttachDbFilename={mdfPath};Trusted_Connection=True;MultipleActiveResultSets=true";
+    $"Server=(localdb)\\MSSQLLocalDB;Database=CicekciTeslim;AttachDbFilename={mdfPath};Trusted_Connection=True;MultipleActiveResultSets=true";
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
